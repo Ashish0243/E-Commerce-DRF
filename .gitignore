@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.swp
+*.bak
+*.log
+*.tmp
+
+# Django
+*.sqlite3
+*.pot
+*.pyc
+db.sqlite3
+*.mo
+
+# Environment
+.env
+*.env
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# VSCode / IDE
+.vscode/
+.idea/
+
+
+media/
+
+# Coverage and test files
+.coverage
+htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+
+
+# Backup files
+*.bak
+*.orig
