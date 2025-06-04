@@ -45,6 +45,7 @@ class Order(models.Model):
     
     order_id=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     user=models.ForeignKey(User,on_delete=models.CASCADE)
+    cart=models.ForeignKey('Cart', on_delete=models.CASCADE ,null=True, blank=True)
     created_at=models.DateTimeField(auto_now_add=True)
     status=models.CharField(max_length=20,choices=Status.choices,default=Status.PENDING) 
     products=models.ManyToManyField(Product,through='OrderItem',related_name='orders') 

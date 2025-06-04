@@ -1,4 +1,4 @@
-from .models import Product, Order, OrderItem,User, Category ,Cart, CartItem
+from .models import Product,User, Category ,Cart, CartItem
 from rest_framework import serializers
 from django.db import transaction
 class CategorySerializer(serializers.ModelSerializer):
@@ -31,74 +31,6 @@ class UserSerializer(serializers.ModelSerializer):
         model=User
         fields=('id','username','email')
 
-class OrderItemSerializer(serializers.ModelSerializer):
-    product_name=serializers.CharField(source='product.name')
-    product_price=serializers.DecimalField(source='product.price',max_digits=10,decimal_places=2)
-    class Meta:
-        model=OrderItem
-        fields=('product_name','product_price','quantity')
-
-
-class OrderSerializer(serializers.ModelSerializer):
-    order_id=serializers.UUIDField(read_only=True)
-    items=OrderItemSerializer(many=True)
-    total_price=serializers.SerializerMethodField()
-    def get_total_price(self,obj):
-        print(obj.items.all())
-        return sum(item.subtotal for item in obj.items.all())
-
-    class Meta:
-        model= Order
-        fields=('order_id','user','created_at','status','items','total_price')
-
-class OrderCreateSerializer(serializers.ModelSerializer):
-    class OrderItemCreateSerializer(serializers.ModelSerializer):
-        class Meta:
-            model=OrderItem
-            fields=('product','quantity')
-    items=OrderItemCreateSerializer(many=True)
-    order_id=serializers.UUIDField(read_only=True)
-
-    # def perform_create(self, serializer):
-    #     serializer.save(user=self.request.user)
-    def update(self, instance, validated_data):
-        items_data = validated_data.pop('items')
-        with transaction.atomic():
-            instance=super().update(instance, validated_data)
-
-            if items_data is not None:
-                instance.items.all().delete()
-                for item in items_data:
-                    OrderItem.objects.create(order=instance, **item)
-        return instance
-
-    def create(self, validated_data):
-        items_data = validated_data.pop('items')
-        user=self.context['request'].user
-        with transaction.atomic():
-            order = Order.objects.create(user=user,**validated_data)
-
-            for items in items_data:
-                OrderItem.objects.create(order=order,**items)
-
-        return order
-
-
-    class Meta:
-        model=Order
-        fields=(
-            'user',
-            'order_id',
-            'status',
-            'items'
-        )
-        extra_kwargs={
-            "user" : {"read_only": True}
-        }
-
-
-
-
 class CartItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
     product_price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2, read_only=True)
@@ -128,27 +60,39 @@ class CartCreateSerializer(serializers.ModelSerializer):
         item_data=validated_data.pop('items')
         user=self.context['request'].user
         with transaction.atomic():
-            cart=Cart.objects.create(user=user,**validated_data)
+            cart = Cart.objects.create(user=user, **validated_data)
             for item in item_data:
-                CartItem.objects.create(cart=cart,**item)
-
+                product = item['product']
+                quantity = item['quantity']
+                if int(quantity) >= int(product.stock):
+                    raise serializers.ValidationError(
+                        f"Requested quantity for '{product.name}' exceeds available stock ({product.stock})."
+                    )
+                CartItem.objects.create(cart=cart, **item)
             return cart
         
     def update(self, instance, validated_data):
         item_data = validated_data.pop('items')
+        print(f"item_data:{item_data}")
         instance = super().update(instance, validated_data)
         existing_items = {item.product_id: item for item in instance.items.all()}
+        print(f"existing:data:{existing_items}")
         for item in item_data:
             product_id = item['product'].id 
             quantity = item['quantity']
 
             if product_id in existing_items:
                 cart_item = existing_items[product_id]
-                cart_item.quantity += quantity
-                cart_item.save()
+                print(cart_item)
+                if quantity> 0:
+                    cart_item.quantity = quantity
+                    print(cart_item)
+                    cart_item.save()
+                else:
+                    cart_item.delete()
             else:
-
-                CartItem.objects.create(cart=instance, product_id=product_id, quantity=quantity)
+                if quantity > 0:
+                    CartItem.objects.create(cart=instance, product_id=product_id, quantity=quantity)
         return instance
                 
     class Meta:
