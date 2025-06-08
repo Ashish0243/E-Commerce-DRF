@@ -27,6 +27,13 @@ class Product(models.Model):
     def is_in_stock(self):
         return self.stock > 0
     
+    @property
+    def avg_rating(self):
+        ratings = self.ratings.all()
+        if not ratings:
+            return 0
+        return sum(rating.rating for rating in ratings) / len(ratings)
+    
     def __str__(self):
         return self.name
 

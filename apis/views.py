@@ -2,18 +2,13 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
-from rest_framework.decorators import api_view
-from rest_framework.generics import (ListAPIView, ListCreateAPIView,
-                                     RetrieveAPIView,
-                                     RetrieveUpdateDestroyAPIView)
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.decorators import action, api_view
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
+
+from .filters import OrderFilter
 from .models import Order
 from .serializers import OrderSerializer
-from .filters import OrderFilter
-from rest_framework.decorators import action
-
 
 
 class OrderViewset(viewsets.ModelViewSet):
@@ -28,6 +23,11 @@ class OrderViewset(viewsets.ModelViewSet):
         if not self.request.user.is_staff:
             qs=qs.filter(user=self.request.user)
         return qs
+    
+    def get_permissions(self):
+        if self.request.method not in ['GET',]:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
     
 #     @action(detail=False, methods=['get'],url_path='user-orders')
 #     def user_orders(self,request):

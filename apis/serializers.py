@@ -1,8 +1,11 @@
-from .models import User, Order
-from cart.models import CartItem
-from rest_framework import serializers
-from django.db import transaction
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from django.db import transaction
+from rest_framework import serializers
+
+from cart.models import CartItem
+
+from .models import Order, User
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

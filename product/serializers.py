@@ -1,5 +1,8 @@
 from rest_framework import serializers
+
 from product.models import Category, Product
+
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model=Category
@@ -32,7 +35,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     category= CategorySerializer(read_only=True)
     class Meta:
         model= Product
-        fields=('id','name','description','price','stock','category')
+        fields=('id','name','description','price','stock','category','avg_rating')
         extra_kwargs = {
             'id': {'read_only': True}
         }

@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django_filters',
     'product',
     'cart',
+    'rating',
     'django_extensions',
     'silk',
     'drf_spectacular',

@@ -1,11 +1,13 @@
 from django.shortcuts import render
-from .models import Product,Category
-from .serializers import ProductSerializer,CategorySerializer,ProductListSerializer
-from .filters import InStockFilterBackend,ProductFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
+from rest_framework import filters, viewsets
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
-from rest_framework import viewsets
+
+from .filters import InStockFilterBackend, ProductFilter
+from .models import Category, Product
+from .serializers import (CategorySerializer, ProductListSerializer,
+                          ProductSerializer)
+
 
 class CategoryViewsets(viewsets.ModelViewSet):
     queryset = Category.objects.all()
