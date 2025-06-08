@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'apis',
     'rest_framework_simplejwt',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,12 +40,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
+    'rest_framework.authtoken',
+    'allauth', # new
+    'allauth.account', # new
+    'allauth.socialaccount',
     'django_filters',
-    'apis',
+    'product',
+    'cart',
     'django_extensions',
     'silk',
     'drf_spectacular',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +62,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'silk.middleware.SilkyMiddleware',
@@ -153,3 +163,14 @@ SPECTACULAR_SETTINGS = {
 }
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' 
+SITE_ID = 1
+
+REST_AUTH={
+    'USE_JWT':True,
+    'JWT_AUTH_COOKIE': 'apis-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'apis-refresh-token',}
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'apis.serializers.CustomRegisterSerializer',
+}

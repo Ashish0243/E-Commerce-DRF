@@ -9,36 +9,10 @@ from rest_framework.generics import (ListAPIView, ListCreateAPIView,
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
-
-from .filters import InStockFilterBackend, ProductFilter
-from .models import Product ,Category,Cart,CartItem
-from .serializers import ProductSerializer ,CategorySerializer,CartSerializer,CartCreateSerializer
+from .models import Cart,CartItem
+from .serializers import CartSerializer,CartCreateSerializer
 from rest_framework.decorators import action
 
-
-class ProductListCreateView(ListCreateAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    filterset_class = ProductFilter
-    filter_backends=[DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,InStockFilterBackend]
-    ordering_fields = ['name', 'price']
-    serach_fields = ['name','description']
-    pagination_class= LimitOffsetPagination
-    def get_permissions(self):
-        self.permission_classes=[AllowAny]
-        if self.request.method == 'POST':
-            self.permission_classes= [IsAdminUser]
-        return super().get_permissions()
-
-class ProductDetailView(RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-    def get_permissions(self):
-        self.permission_classes=[AllowAny]
-        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
-            self.permission_classes= [IsAdminUser]
-        return super().get_permissions()
 
 
 # class OrderViewset(viewsets.ModelViewSet):
@@ -67,23 +41,4 @@ class ProductDetailView(RetrieveUpdateDestroyAPIView):
 #         return Response(serializer.data)
     
 
-class CategoryViewsets(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = [IsAdminUser]
-    filterset_class= ProductFilter
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    ordering_fields = ['price','stock']
 
-class CartViewset(viewsets.ModelViewSet):
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
-    permission_classes = [AllowAny]
-    pagination_class=None
-    
-    def get_serializer(self, *args, **kwargs):
-        kwargs['context'] = self.get_serializer_context()
-        if self.request.method in ['POST','PUT', 'PATCH']:
-            return CartCreateSerializer(*args, **kwargs)
-        return super().get_serializer(*args, **kwargs)
-    

@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from apis.views import ProductDetailView,ProductListCreateView,CategoryViewsets,CartViewset
+from cart.views import CartViewset
+from product.views import ProductListCreateView, ProductDetailView, CategoryViewsets
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -36,6 +37,8 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('dj-rest-auth/registration/',include('dj_rest_auth.registration.urls')),
 
 ]
 router= DefaultRouter()

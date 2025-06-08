@@ -1,6 +1,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Cart, CartItem, Order, OrderItem,Product
+from cart.models import Cart, CartItem
+from product.models import Product
+from .models import  Order, OrderItem
 
 @receiver(post_save,sender=Cart)
 def create_order_on_checkout(sender,instance,created,**kwargs):
