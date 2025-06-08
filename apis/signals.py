@@ -11,7 +11,7 @@ def create_order_on_checkout(sender,instance,created,**kwargs):
             order= Order.objects.create(
                 user=instance.user,
                 cart=instance,
-                status=Order.Status.PENDING
+                status=Order.Status.CONFIRMED
             )
             for item in instance.items.all():
                 a=  int(item.product.stock)

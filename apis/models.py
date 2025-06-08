@@ -20,7 +20,10 @@ class Order(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     status=models.CharField(max_length=20,choices=Status.choices,default=Status.PENDING) 
     products=models.ManyToManyField(Product,through='OrderItem',related_name='orders') 
-
+    
+    @property
+    def total_amount(self):
+        return sum(item.subtotal for item in self.items.all())
     def __str__(self):
         return f'Order {self.order_id} by {self.user.username}' 
 

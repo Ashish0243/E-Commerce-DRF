@@ -42,29 +42,35 @@ class CartCreateSerializer(serializers.ModelSerializer):
             return cart
         
     def update(self, instance, validated_data):
-        item_data = validated_data.pop('items')
-        print(f"item_data:{item_data}")
+        item_data = None
+        if 'items' in validated_data:
+            item_data = validated_data.pop('items')
         instance = super().update(instance, validated_data)
         existing_items = {item.product_id: item for item in instance.items.all()}
-        print(f"existing:data:{existing_items}")
-        for item in item_data:
-            product_id = item['product'].id 
-            quantity = item['quantity']
+        print(existing_items)
+        if item_data:
+            for item in item_data:
+                product_id = item['product'].id 
+                quantity = item['quantity']
+                print(product_id)
 
-            if product_id in existing_items:
-                cart_item = existing_items[product_id]
-                print(cart_item)
-                if quantity> 0:
-                    cart_item.quantity = quantity
-                    print(cart_item)
-                    cart_item.save()
+                if product_id in existing_items:
+                    cart_item = existing_items[product_id]
+                    if quantity> 0 and quantity <= cart_item.product.stock:
+                        cart_item.quantity = quantity
+                        cart_item.save()
+                    elif quantity >= cart_item.product.stock:
+                        raise serializers.ValidationError(
+                        f"Requested quantity for '{cart_item.product.name}' exceeds available stock ({cart_item.product.stock})."
+                    )
+                    else:
+                        cart_item.delete()
                 else:
-                    cart_item.delete()
-            else:
-                if quantity > 0:
-                    CartItem.objects.create(cart=instance, product_id=product_id, quantity=quantity)
+                    if quantity > 0:
+                        CartItem.objects.create(cart=instance, product_id=product_id, quantity=quantity)
         return instance
                 
+    
     class Meta:
         model=Cart
         fields=('user','cart_id','checked_out','items')

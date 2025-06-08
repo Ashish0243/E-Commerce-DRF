@@ -17,7 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from cart.views import CartViewset
-from product.views import ProductListCreateView, ProductDetailView, CategoryViewsets
+from product.views import CategoryViewsets,ProductViewsets
+from apis.views import OrderViewset
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -29,8 +30,6 @@ from django.conf.urls.static import static
 urlpatterns = [
 
     path('admin/', admin.site.urls),
-    path('products/', ProductListCreateView.as_view(), name='product_list'),
-    path('products/<int:pk>/', ProductDetailView.as_view(), name='product_detail'),
     path('silk/', include('silk.urls', namespace='silk')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
@@ -44,4 +43,6 @@ urlpatterns = [
 router= DefaultRouter()
 router.register('category',CategoryViewsets)
 router.register('cart', CartViewset)
+router.register('product',ProductViewsets)
+router.register('order', OrderViewset)
 urlpatterns += router.urls

@@ -18,10 +18,23 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model= Product
-        fields=('name','description','price','stock','category')
+        fields=('id','name','description','price','stock','category')
+        extra_kwargs = {
+            'id': {'read_only': True}
+        }
     
     def validate_price(self, value):
         if value <= 0:
             raise serializers.ValidationError("Price must be greater than zero.")
         return value
+    
+class ProductListSerializer(serializers.ModelSerializer):
+    category= CategorySerializer(read_only=True)
+    class Meta:
+        model= Product
+        fields=('id','name','description','price','stock','category')
+        extra_kwargs = {
+            'id': {'read_only': True}
+        }
+    
     
