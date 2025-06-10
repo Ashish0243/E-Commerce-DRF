@@ -21,7 +21,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model= Product
-        fields=('id','name','description','price','stock','category')
+        fields=('id','name','description','price','stock','category','image')
         extra_kwargs = {
             'id': {'read_only': True}
         }
@@ -35,7 +35,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     category= CategorySerializer(read_only=True)
     class Meta:
         model= Product
-        fields=('id','name','description','price','stock','category','avg_rating')
+        fields=('id','name','description','price','stock','category','avg_rating', 'image')
         extra_kwargs = {
             'id': {'read_only': True}
         }
