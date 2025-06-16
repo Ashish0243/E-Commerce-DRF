@@ -10,7 +10,7 @@ from .serializers import CartCreateSerializer, CartSerializer
 class CartViewset(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     pagination_class=None
     
     def get_serializer(self, *args, **kwargs):

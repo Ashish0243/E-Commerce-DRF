@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'dj_rest_auth',
     'dj_rest_auth.registration',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -178,3 +179,17 @@ REST_AUTH={
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'apis.serializers.CustomRegisterSerializer',
 }
+
+CELERY_BROKER_URL='redis://127.0.0.1:6379/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+CELERY_RESULT_BACKEND='django-db'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = 587
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
